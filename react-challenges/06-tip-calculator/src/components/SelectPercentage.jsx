@@ -1,14 +1,14 @@
 import '../style.css'
 
-export default function SelectPercentage({children}) {
+export default function SelectPercentage({children, tip, onSetTip}) {
     return(
         <div>
           <span>{children}</span>
-          <select name="" id="">
-            <option value="">Dissatisfied (0%)</option>
-            <option value="">It was okay (5%)</option>
-            <option value="">It was good (10%)</option>
-            <option value="">Absolutely Amazing (20%)</option>
+          <select value={tip} onChange={(e) => onSetTip(Number(e.target.value))}>
+            <option value={0}>Dissatisfied (0%)</option>
+            <option value={5}>It was okay (5%)</option>
+            <option value={10}>It was good (10%)</option>
+            <option value={20}>Absolutely Amazing (20%)</option>
           </select>
         </div>
     )
