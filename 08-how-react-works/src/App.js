@@ -41,7 +41,7 @@ function Tabbed({ content }) {
       </div>
 
       {activeTab <= 2 ? (
-        <TabContent item={content.at(activeTab)} />
+        <TabContent key={content[activeTab].summary} item={content.at(activeTab)} />
       ) : (
         <DifferentContent />
       )}
@@ -56,7 +56,8 @@ function Tab({ num, activeTab, onClick }) {
       className={activeTab === num ? "tab active" : "tab"}
       onClick={() => onClick(num)}
     >
-      Tab {num + 1}
+
+      Tab {num + 1} 
     </button>
   );
 }
