@@ -18,7 +18,7 @@ const content = [
   },
 ];
 
-console.log(<DifferentContent/>)
+// console.log(<DifferentContent/>)
 
 export default function App() {
   return (
@@ -70,6 +70,14 @@ function TabContent({ item }) {
     setLikes(likes + 1);
   }
 
+  console.log('RENDERED!!!')
+
+  function handleUndo() {
+    setLikes(0);
+    console.log(likes);
+    setShowDetails(true);
+  }
+
   return (
     <div className="tab-content">
       <h4>{item.summary}</h4>
@@ -88,7 +96,7 @@ function TabContent({ item }) {
       </div>
 
       <div className="tab-undo">
-        <button>Undo</button>
+        <button onClick={handleUndo}>Undo</button>
         <button>Undo in 2s</button>
       </div>
     </div>
