@@ -1,35 +1,12 @@
 import { useState, useEffect } from 'react';
 import StarRating from './StarRating';
 
-const tempWatchedData = [
-  {
-    imdbID: 'tt1375666',
-    Title: 'Inception',
-    Year: '2010',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: 'tt0088763',
-    Title: 'Back to the Future',
-    Year: '1985',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
-
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr?.length, 0);
 
 export default function App() {
   const API_KEY = '4c00399c';
-  const [query, setQuery] = useState('inception');
+  const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
   // eslint-disable-next-line
   const [watched, setWatched] = useState([]);
@@ -43,6 +20,7 @@ export default function App() {
 
   const handleCloseMovie = function () {
     setSelectedId(null);
+    document.title = 'usePopcorn';
   };
 
   function handleAddWatchedList(newWatchedMovie) {
@@ -55,13 +33,15 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
       async function fetchMovies() {
         try {
           setIsLoading(true);
           setError('');
 
           const res = await fetch(
-            `http://www.omdbapi.com/?i=tt3896198&apikey=${API_KEY}&s=${query}`
+            `http://www.omdbapi.com/?i=tt3896198&apikey=${API_KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           const data = await res.json();
@@ -71,11 +51,14 @@ export default function App() {
 
           setMovies(data.Search);
         } catch (err) {
-          setError(
-            err.message === 'Failed to fetch'
-              ? 'Koneksi anda terputus!'
-              : err.message
-          );
+          if (err.name !== 'AbortError')
+            setError(
+              err.message === 'Failed to fetch'
+                ? 'Koneksi anda terputus!'
+                : err.message
+            );
+
+            console.log(err.message);
         } finally {
           setIsLoading(false);
         }
@@ -88,6 +71,11 @@ export default function App() {
       }
 
       fetchMovies();
+
+      return function () {
+        controller.abort();
+        handleCloseMovie();
+      };
     },
     [query]
   );
@@ -171,6 +159,36 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatchedList, watched }) {
       fetchMovieDetails();
     },
     [selectedId]
+  );
+
+  useEffect(
+    function () {
+      if (!title) return;
+
+      document.title = `MOVIE: ${title}`;
+
+      return function () {
+        document.title = 'usePopcorn';
+      };
+    },
+    [title]
+  );
+
+  useEffect(
+    function () {
+      const closeEventHandler = function (e) {
+        if (e.key === 'Escape') {
+          onCloseMovie();
+        }
+      };
+
+      document.addEventListener('keydown', closeEventHandler);
+
+      return function () {
+        document.removeEventListener('keydown', closeEventHandler);
+      };
+    },
+    [onCloseMovie]
   );
 
   function handleAdd() {
