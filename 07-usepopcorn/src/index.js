@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App-v2';
+import App from './App';
 import './index.css';
 // import StarRating from './StarRating.jsx';
 
