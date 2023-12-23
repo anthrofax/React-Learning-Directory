@@ -1,0 +1,17 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  border: 1px solid red;
+  display: flex;
+  justify-content: center;
+}
+
+.step {
+  display: flex;
+  justify-content: center;
+}
+
+.count {
+  display: flex;
+  justify-content: center;
+}
