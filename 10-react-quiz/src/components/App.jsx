@@ -8,13 +8,16 @@ import StartScreen from './StartScreen';
 import Question from './Question';
 import FinishScreen from './FinishScreen';
 
+const WAKTU_JWB_PER_SOAL = 1;
+
 const initialValue = {
   questions: [],
   status: 'loading',
   index: 0,
   answer: null,
   points: 0,
-  highscore: 0
+  highscore: 0,
+  secondsRemaining: null
 };
 
 const reducer = function (state, action) {
@@ -24,7 +27,7 @@ const reducer = function (state, action) {
     case 'dataFailed':
       return { ...state, status: 'error' };
     case 'start':
-      return { ...state, status: 'active' };
+      return { ...state, status: 'active', secondsRemaining: state.questions.length * WAKTU_JWB_PER_SOAL };
     case 'newAnswer':
       const currentQuestion = state.questions[state.index];
 
@@ -42,13 +45,15 @@ const reducer = function (state, action) {
       return { ...state, status: 'finished', highscore: state.points > state.highscore ? state.points : state.highscore};
     case 'reset':
       return { ...initialValue, questions: state.questions, status: 'ready'};
+    case 'tick':
+      return {...state, secondsRemaining: state.secondsRemaining > 0 ? state.secondsRemaining - 1 : state.secondsRemaining };
     default:
       throw new Error('Unknown action');
   }
 };
 
 function App() {
-  const [{ questions, status, index, answer, points, highscore }, dispatch] = useReducer(
+  const [{ questions, status, index, answer, points, highscore, secondsRemaining}, dispatch] = useReducer(
     reducer,
     initialValue
   );
@@ -82,6 +87,8 @@ function App() {
             jumlahSoal={jumlahSoal}
             points={points}
             maxPossiblePoints={maxPossiblePoints}
+            secondsRemaining={secondsRemaining}
+
           />
         )}
         {status === 'finished' && <FinishScreen dispatch={dispatch} points={points} maxPossiblePoints={maxPossiblePoints} highscore={highscore}/>}
