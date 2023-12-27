@@ -55,6 +55,3 @@ function App() {
 }
 
 export default App;
-
-
-// CEK LAGI CARA PENGGUNAAN OUTLET
