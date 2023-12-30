@@ -1,14 +1,17 @@
 // "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=0&longitude=0"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import styles from './Form.module.css';
 import Button from './Button';
 import BackButton from './BackButton';
 import useUrlPosition from '../hooks/useUrlPosition';
-import Spinner from './Spinner'
-import Message from './Message'
-import { useEffect } from 'react';
+import Spinner from './Spinner';
+import Message from './Message';
+import DatePicker from 'react-datepicker';
+import { useCities } from '../contexts/CitiesContext';
+import {useNavigate} from 'react-router-dom'
+import 'react-datepicker/dist/react-datepicker.css';
 
 export function convertToEmoji(countryCode) {
   const codePoints = countryCode
@@ -16,34 +19,38 @@ export function convertToEmoji(countryCode) {
     .split('')
     .map((char) => 127397 + char.charCodeAt());
   return String.fromCodePoint(...codePoints);
-
 }
 
-const BASE_URL = 'https://api.bigdatacloud.net/data/reverse-geocode-client'
+const BASE_URL = 'https://api.bigdatacloud.net/data/reverse-geocode-client';
 
 function Form() {
-  const [date, setDate] = useState(new Date());
-  const [notes, setNotes] = useState('');
   const [lat, lng] = useUrlPosition();
   const [isLoadingGeocoding, setisLoadingGeocoding] = useState(false);
   const [cityName, setCityName] = useState();
   const [country, setCountry] = useState();
   const [emoji, setEmoji] = useState();
+  const [date, setDate] = useState(new Date());
+  const [notes, setNotes] = useState("");
   const [geoCodingError, setGeoCodingError] = useState();
+  const { addCity, isLoading } = useCities();
+  const navigate = useNavigate();
 
   useEffect(
     function () {
       async function reverseGeocode() {
         try {
           setisLoadingGeocoding(true);
-          setGeoCodingError("");
-          
+          setGeoCodingError('');
+
           const res = await fetch(
             `${BASE_URL}?latitude=${lat}&longitude=${lng}`
           );
           const data = await res.json();
-          
-          if(!data.countryName) throw new Error('Area yang anda klik tidak valid, mohon pilih lokasi yang lain.');
+
+          if (!data.countryName)
+            throw new Error(
+              'Area yang anda klik tidak valid, mohon pilih lokasi yang lain.'
+            );
 
           setCityName(data.city || data.locality || '');
           setCountry(data.countryName);
@@ -60,11 +67,36 @@ function Form() {
     [lat, lng]
   );
 
-  if (geoCodingError) return <Message message={geoCodingError}></Message>
-  if (isLoadingGeocoding) return < Spinner/>
+  async function handleAddCity(e) {
+    e.preventDefault();
+
+    if (!date || !cityName) return;
+
+    const newCity = {
+      cityName,
+      country,
+      emoji,
+      date,
+      notes,
+      position: {
+        lat,
+        lng,
+      },
+    };
+
+    await addCity(newCity);
+    navigate("/app/cities");
+  }
+
+  if (!lat && !lng)
+    return (
+      <Message message="Coba mulai dengan klik map untuk mendapatkan lokasi terlebih dahulu."></Message>
+    );
+  if (geoCodingError) return <Message message={geoCodingError}></Message>;
+  if (isLoadingGeocoding) return <Spinner />;
 
   return (
-    <form className={styles.form}>
+    <form className={`${styles.form} ${(isLoading ? styles["loading"] : "")}`}>
       <div className={styles.row}>
         <label htmlFor="cityName">City name</label>
         <input
@@ -77,10 +109,16 @@ function Form() {
 
       <div className={styles.row}>
         <label htmlFor="date">When did you go to {cityName}?</label>
-        <input
+        {/* <input
           id="date"
           onChange={(e) => setDate(e.target.value)}
           value={date}
+        /> */}
+        <DatePicker
+        id="date"
+          selected={date}
+          onChange={(date) => setDate(date)}
+          dateFormat="dd/MM/yyyy"
         />
       </div>
 
@@ -94,7 +132,9 @@ function Form() {
       </div>
 
       <div className={styles.buttons}>
-        <Button type="primary">Add</Button>
+        <Button type="primary" onClick={handleAddCity}>
+          Add
+        </Button>
         <BackButton />
       </div>
     </form>

@@ -41,6 +41,28 @@ function CitiesProvider({ children }) {
     }
   }
 
+  async function addCity(cityData) {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`${BASE_URL}/cities`, {
+        method: 'POST',
+        body: JSON.stringify(cityData),
+        headers: {
+          "Content-Type": 'application/json'
+        }
+      });
+      const data = await res.json();
+
+      console.log(data)
+      setCities([...cities, data])
+      setCurrentCity(data);
+    } catch (err) {
+      alert('Data city gagal ditambahkan.');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <CitiesContext.Provider
       value={{
@@ -48,6 +70,7 @@ function CitiesProvider({ children }) {
         isLoading,
         currentCity,
         getCity,
+        addCity
       }}
     >
       {children}
