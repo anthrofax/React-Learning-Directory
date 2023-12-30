@@ -9,8 +9,9 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useState, useEffect } from 'react';
-
 import { useCities } from '../contexts/CitiesContext';
+import { useGeolocation } from '../hooks/useGeolocation';
+import Button from './Button';
 
 function Map() {
   const [searchParams] = useSearchParams();
@@ -18,9 +19,9 @@ function Map() {
     38.727881642324164, -9.140900099907554,
   ]);
   const { cities } = useCities();
-
   const mapLat = searchParams.get('lat');
   const mapLng = searchParams.get('lng');
+  const { position: geoLocPosition, getPosition } = useGeolocation();
 
   useEffect(
     function () {
@@ -29,6 +30,13 @@ function Map() {
       setMapPosition([mapLat, mapLng]);
     },
     [mapLat, mapLng]
+  );
+
+  useEffect(
+    function () {
+      if (geoLocPosition) setMapPosition([geoLocPosition.lat, geoLocPosition.lng]);
+    },
+    [geoLocPosition]
   );
 
   return (
@@ -53,6 +61,8 @@ function Map() {
 
       <ChangeCenter position={mapPosition} />
       <DetectClick />
+      
+      {!geoLocPosition && <Button type="position" onClick={getPosition}>Use Your Position</Button>}
     </MapContainer>
   );
 }
