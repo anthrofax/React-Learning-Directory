@@ -33,9 +33,13 @@ function AuthProvider({ children }) {
     initialValue
   );
 
-  function login(email, password) {
+  function login(e, email, password) {
+    e.preventDefault();
+
+    console.log(email,password)
+
     if (email === FAKE_USER.email && password === FAKE_USER.password)
-      dispatch({ type: 'login', FAKE_USER });
+      dispatch({ type: 'login', payload: FAKE_USER });
   }
 
   function logout() {
