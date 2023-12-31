@@ -1,3 +1,4 @@
+import Button from "../components/Button";
 import PageNav from "../components/PageNav";
 import { useAuth } from "../contexts/FakeAuthContext";
 import styles from "./Login.module.css";
@@ -13,7 +14,7 @@ export default function Login() {
 
   useEffect(function() {
     if (isAuthenticated) navigate('/app');
-  }, [isAuthenticated])
+  }, [isAuthenticated, navigate])
 
   return (
     <main className={styles.login}>
@@ -40,9 +41,9 @@ export default function Login() {
         </div>
 
         <div>
-          <button onClick={(e) => {
+          <Button type="primary" onClick={(e) => {
             login(e, email, password)
-          }}>Login</button>
+          }}>Login</Button >
         </div>
       </form>
     </main>
