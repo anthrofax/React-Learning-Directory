@@ -20,9 +20,6 @@ function App() {
     [isFakeDark]
   );
 
-  const x = usePosts();
-  console.log(x);
-
   return (
     <section>
       <button
