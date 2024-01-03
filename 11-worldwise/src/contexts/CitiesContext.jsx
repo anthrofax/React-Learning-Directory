@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 import { useEffect, useContext, createContext } from 'react';
 
 const CitiesContext = createContext();
@@ -65,7 +65,7 @@ function CitiesProvider({ children }) {
     getCities();
   }, []);
 
-  async function getCity(id) {
+  const getCity = useCallback(async function getCity(id) {
     if (+id === currentCity.id) return;
     
     dispatch({ type: 'loading' });
@@ -80,7 +80,7 @@ function CitiesProvider({ children }) {
         payload: 'Data mengenai city tersebut tidak tersedia.',
       });
     }
-  }
+  }, [currentCity])
 
   async function addCity(cityData) {
     dispatch({ type: 'loading' });
