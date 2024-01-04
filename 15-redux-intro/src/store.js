@@ -21,3 +21,6 @@ function reducer(state = initialValue, action) {
     }
 }
 
+const store = createStore(reducer);
+store.dispatch({type: 'account/deposit', payload: 250});
+console.log(store.getState())
