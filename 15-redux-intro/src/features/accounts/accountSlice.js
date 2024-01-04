@@ -10,6 +10,8 @@ export default function accountReducer(state = initialAccountState, action) {
     case 'account/deposit':
       return { ...state, balance: state.balance + action.payload, isLoading: false };
     case 'account/withdraw':
+      if (state.balance < action.payload) return state
+
       return { ...state, balance: state.balance - action.payload };
     case 'account/requestLoan':
       return {
@@ -38,7 +40,7 @@ export function deposit(amount, currency) {
 
   return async function (dispatch, state) {
     dispatch(loading());
-    
+
     const res = await fetch(
       `https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=USD`
     );
