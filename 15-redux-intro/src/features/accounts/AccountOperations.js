@@ -12,8 +12,9 @@ function AccountOperations() {
   const { isLoading, loan } = useSelector((store) => store.account);
 
   function handleDeposit() {
-    // dispatch(deposit(depositAmount, currency));
-    dispatch(deposit(depositAmount));
+    dispatch(deposit(depositAmount, currency));
+    // dispatch(deposit(depositAmount));
+
     setDepositAmount('');
     setCurrency('USD');
   }
