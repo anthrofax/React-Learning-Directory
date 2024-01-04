@@ -8,7 +8,7 @@ function formatCurrency(value) {
 }
 
 function BalanceDisplay({ balance }) {
-  return <div className="balance">{formatCurrency(0)}</div>;
+  return <div className="balance">{formatCurrency(balance)}</div>;
 }
 
 function mapStateToPorps(state) {
