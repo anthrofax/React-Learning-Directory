@@ -48,7 +48,7 @@ function CompanyItem({ company, defaultVisibility }) {
   );
 }
 
-function List({ title, items }) {
+function List({ title, items, render }) {
   const [isOpen, setIsOpen] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -69,9 +69,7 @@ function List({ title, items }) {
       </div>
       {isOpen && (
         <ul className="list">
-          {displayItems.map((product) => (
-            <ProductItem key={product.productName} product={product} />
-          ))}
+          {displayItems.map(render)}
         </ul>
       )}
 
@@ -88,7 +86,12 @@ export default function App() {
       <h1>Render Props</h1>
 
       <div className="col-2">
-        <List title="Products" items={products} />
+        <List title="Products" items={products} render={(item) => (
+            <ProductItem key={item.productName} product={item} />
+          )}/>
+        <List title="Companies" items={companies} render={(item) => (
+            <CompanyItem key={item.companyName} company={item} defaultVisibility={false} />
+          )}/>
       </div>
     </div>
   );
